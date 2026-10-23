@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quarantine & Treatment Facility App - Version 1.0 Specification</title>
+<style>
+  body {
+    font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    margin: 40px auto;
+    max-width: 900px;
+    background-color: #ffffff;
+  }
+  h1 {
+    color: #0b3c5d;
+    border-bottom: 2px solid #0b3c5d;
+    padding-bottom: 8px;
+    font-size: 24pt;
+    margin-top: 20px;
+  }
+  h2 {
+    color: #1d2731;
+    border-bottom: 1px solid #d9d9d9;
+    padding-bottom: 6px;
+    font-size: 16pt;
+    margin-top: 28px;
+  }
+  h3 {
+    color: #328cc1;
+    font-size: 13pt;
+    margin-top: 18px;
+  }
+  h4 {
+    color: #222;
+    font-size: 11pt;
+    font-weight: bold;
+    margin-top: 14px;
+    margin-bottom: 4px;
+  }
+  p, li {
+    font-size: 11pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 10.5pt;
+  }
+  th {
+    background-color: #0b3c5d;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    padding: 10px 12px;
+    border: 1px solid #0b3c5d;
+  }
+  td {
+    padding: 8px 12px;
+    border: 1px solid #d3d3d3;
+    vertical-align: top;
+  }
+  tr:nth-child(even) {
+    background-color: #f9fbfd;
+  }
+  .callout-box {
+    background-color: #f0f7fb;
+    border-left: 5px solid #328cc1;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 4px;
+  }
+  .warning-box {
+    background-color: #fff9e6;
+    border-left: 5px solid #d9822b;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 4px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9pt;
+    font-weight: bold;
+  }
+  .badge-high { background-color: #fde8e8; color: #9b1c1c; }
+  .badge-med { background-color: #fef08a; color: #713f12; }
+  .badge-low { background-color: #def7ec; color: #03543f; }
+  .metric-card {
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Quarantine & Treatment Facility Application (v1.0)</h1>
+<p><strong>Document Type:</strong> Product Requirements & Sprint Planning Deliverable<br>
+<strong>Scope:</strong> 74-Bed Facility Workflow Optimization | <strong>Version:</strong> 1.0 Functional Specification</p>
+
+<hr>
+
+<h2>Q1: User Persona Taxonomy, Goals & Feature Matrix</h2>
+<p>To eliminate paper-based documentation delays, reduce PPE waste, and prevent clinical bottlenecks, Version 1 identifies three primary roles:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 20%;">User Role</th>
+      <th style="width: 35%;">Core Operational Goal</th>
+      <th style="width: 45%;">Relevant Features & Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Nurse</strong></td>
+      <td>Record daily patient vitals swiftly and accurately prior to physician rounds.</td>
+      <td>
+        <ul>
+          <li><strong>Room/Bed Directory:</strong> Visual overview of all 74 patient rooms with real-time vitals indicators (e.g., <em>"Recorded Today"</em> vs. <em>"Pending"</em>).</li>
+          <li><strong>Daily Temperature Logger:</strong> Rapid numerical vitals entry with automatic system timestamping.</li>
+          <li><strong>Vitals History View:</strong> Chronological audit log of previous temperatures to check trends and prevent data-entry discrepancies.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. Doctor</strong></td>
+      <td>Evaluate patient recovery trends, prescribe treatments, eliminate unproductive room entries, and identify cured patients.</td>
+      <td>
+        <ul>
+          <li><strong>Pre-Visit Vitals Check:</strong> Real-time status banner confirming if morning vitals are captured before entering patient rooms.</li>
+          <li><strong>3-Day Fever Tracker:</strong> 72-hour rolling history evaluating afebrile status against clinical discharge criteria.</li>
+          <li><strong>Discharge Recommendation:</strong> One-click "Mark for Discharge" toggle that unlocks only when safety criteria are met, instantly alerting Admin.</li>
+          <li><strong>Clinical Treatment Notes:</strong> Rapid entry of medication adjustments, symptoms, and clinical observations.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Admin Staff</strong></td>
+      <td>Manage 74-bed capacity, expedite room disinfection and discharge turnover, and monitor facility safety metrics.</td>
+      <td>
+        <ul>
+          <li><strong>Capacity Dashboard:</strong> Real-time 74-room capacity monitor (Occupied, Available, In Cleaning).</li>
+          <li><strong>Discharge Processing Queue:</strong> Real-time alerts of doctor-cleared patients to initiate paperwork and bed turnover immediately.</li>
+          <li><strong>Safety & Performance Analytics:</strong> Facility recovery tracking against the 85% success benchmark (15% expected mortality rate).</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Q2: Functional Prototype Architecture & Specifications</h2>
+
+<div class="callout-box">
+  <strong>Live Prototype URL:</strong> <a href="https://quarantine-facility-prototype.vercel.app">https://quarantine-facility-prototype.vercel.app</a> <em>(Replace with your deployed Vercel link)</em><br>
+  <strong>Target Platforms:</strong> Mobile/Tablet (Bedside Nursing Rounds) & Desktop (Doctor/Admin Console)
+</div>
+
+<h3>Prototype Screen Breakdown</h3>
+
+<h4>Screen 1: Facility Capacity & Room Overview Dashboard</h4>
+<ul>
+  <li><strong>Real-Time Occupancy Gauge:</strong> Prominently highlights <strong>74/74 Occupied Beds</strong> (Counter transitions to high-visibility Red at 100% capacity).</li>
+  <li><strong>74-Room Interactive Directory:</strong> Room cards displaying patient ID, current temperature, and status badges (<em>Afebrile</em>, <em>Fever</em>, <em>Pending Morning Vitals</em>, <em>Ready for Discharge</em>).</li>
+  <li><strong>Quick Filter Bar:</strong> Fast toggles to isolate high-fever patients, pending vitals, or rooms requiring cleaning.</li>
+</ul>
+
+<h4>Screen 2: Nurse Station & Temperature Logging Interface</h4>
+<ul>
+  <li><strong>Bedside Selection:</strong> Quick single-tap room and patient verification.</li>
+  <li><strong>Validated Numeric Input:</strong> Instant validation rejecting physiologically impossible readings (&lt; 95.0°F or &gt; 108.0°F).</li>
+  <li><strong>Automated Timestamping:</strong> Automatically captures server date/time on submission to prevent backdating.</li>
+  <li><strong>Historical Log:</strong> Shows last 5 readings with trend direction (↑ Rising / ↓ Dropping / ➔ Stable).</li>
+</ul>
+
+<h4>Screen 3: Doctor Clinical Console & Discharge Workflow</h4>
+<ul>
+  <li><strong>Pre-Visit Safety Banner:</strong> High-priority alert notifying doctors if the nurse has not yet recorded morning vitals.</li>
+  <li><strong>3-Day Fever Recovery Tracker:</strong> Visual day-over-day chart tracking maximum daily temperatures against the 100.4°F fever line.</li>
+  <li><strong>Automated Discharge Toggle:</strong> Button remains locked until the system verifies 3 consecutive afebrile days; clicking immediately pushes the patient to the Admin Discharge Queue.</li>
+</ul>
+
+<hr>
+
+<h2>Q3: Logical Constraints & Validation Rules for Developers</h2>
+
+<p>To guarantee medical safety, operational efficiency, and data integrity, developers must implement the following four rule sets:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 28%;">Domain</th>
+      <th style="width: 72%;">Validation Logic & System Behavioral Rule</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Temperature Logging Constraints</strong></td>
+      <td>
+        <ul>
+          <li><strong>Multiple Entries:</strong> Nurses can log multiple entries per calendar day for acute monitoring.</li>
+          <li><strong>Official Daily Reading:</strong> The system automatically timestamps each entry and designates the <em>latest entry of the calendar day</em> as the official metric for discharge calculations.</li>
+          <li><strong>Physiological Bounds:</strong> Reject readings &lt; 95.0°F (35.0°C) and &gt; 108.0°F (42.2°C) with inline validation prompts.</li>
+          <li><strong>Temporal Security:</strong> Timestamp is strictly system-generated. Future timestamps and backdated edits are blocked.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. Doctor Visit Sequencing Rules</strong></td>
+      <td>
+        <ul>
+          <li><strong>Pre-Visit Guard:</strong> If a physician opens a patient file where <code>today_vitals_logged == false</code>, display a prominent amber banner:
+            <div class="warning-box">
+              <strong>⚠️ Warning:</strong> Patient temperature has not been recorded today. Please coordinate with the nurse or record vitals first to avoid workflow delays and protect clinical safety.
+            </div>
+          </li>
+          <li><strong>Emergency Bypass:</strong> Doctors may override the warning with an emergency care note.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Discharge Eligibility Logic</strong></td>
+      <td>
+        <ul>
+          <li><strong>Locked State:</strong> The "Mark for Discharge" button is disabled (<code>disabled=true</code>) by default.</li>
+          <li><strong>3-Day Afebrile Rule:</strong> System queries the backend log for the last 3 consecutive full calendar days (72h). Each day's maximum temperature must be strictly below 100.4°F (38.0°C).</li>
+          <li><strong>Zero Gap Tolerance:</strong> If any of the 3 days lacks a recorded reading, the button remains locked.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4. Capacity & Operational Alerts</strong></td>
+      <td>
+        <ul>
+          <li><strong>Full Capacity Alert:</strong> When active patient count reaches 74/74, the occupancy counter turns vivid red, and new admissions are queued.</li>
+          <li><strong>Extended Stay Inefficiency Trigger (4-Hour Bottleneck Rule):</strong> When a doctor marks a patient "Ready for Discharge", an automated timer starts. If the bed is not vacated within <strong>4 hours</strong>, an escalation banner flags on the Admin Dashboard to prevent stay inefficiencies.</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Q4: Sprint Planning & Optimization Analysis</h2>
+
+<h3>1. Sprint Capacity & Weights Setup</h3>
+<ul>
+  <li><strong>Total Team Velocity:</strong> 25 Story Points</li>
+  <li><strong>Pre-allocated / Committed Work:</strong> 3 stories × 5 points each = <strong>15 Story Points</strong></li>
+  <li><strong>Available Capacity:</strong> 25 − 15 = <strong>10 Story Points</strong></li>
+  <li><strong>Value Multipliers:</strong> High Priority = <strong>6×</strong> | Medium Priority = <strong>3×</strong> | Low Priority = <strong>1×</strong></li>
+</ul>
+
+<h3>2. Feature Value-to-Effort Prioritization Matrix</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:center;">Feature</th>
+      <th>Priority</th>
+      <th style="text-align:center;">Effort (Points)</th>
+      <th style="text-align:center;">Calculation</th>
+      <th style="text-align:center;">Value</th>
+      <th style="text-align:center;">Value/Effort Ratio</th>
+      <th style="text-align:center;">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:center;"><strong>Feature J</strong></td>
+      <td><span class="badge badge-low">Low</span></td>
+      <td style="text-align:center;">0.1</td>
+      <td style="text-align:center;">1 × 1</td>
+      <td style="text-align:center;">1</td>
+      <td style="text-align:center;"><strong>10.00</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature A</strong></td>
+      <td><span class="badge badge-high">High</span></td>
+      <td style="text-align:center;">1.0</td>
+      <td style="text-align:center;">1 × 6</td>
+      <td style="text-align:center;">6</td>
+      <td style="text-align:center;"><strong>6.00</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature I</strong></td>
+      <td><span class="badge badge-low">Low</span></td>
+      <td style="text-align:center;">0.3</td>
+      <td style="text-align:center;">1 × 1</td>
+      <td style="text-align:center;">1</td>
+      <td style="text-align:center;"><strong>3.33</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature F</strong></td>
+      <td><span class="badge badge-med">Medium</span></td>
+      <td style="text-align:center;">1.0</td>
+      <td style="text-align:center;">1 × 3</td>
+      <td style="text-align:center;">3</td>
+      <td style="text-align:center;"><strong>3.00</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature G</strong></td>
+      <td><span class="badge badge-low">Low</span></td>
+      <td style="text-align:center;">0.4</td>
+      <td style="text-align:center;">1 × 1</td>
+      <td style="text-align:center;">1</td>
+      <td style="text-align:center;"><strong>2.50</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature B</strong></td>
+      <td><span class="badge badge-high">High</span></td>
+      <td style="text-align:center;">3.0</td>
+      <td style="text-align:center;">1 × 6</td>
+      <td style="text-align:center;">6</td>
+      <td style="text-align:center;"><strong>2.00</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature H</strong></td>
+      <td><span class="badge badge-low">Low</span></td>
+      <td style="text-align:center;">0.5</td>
+      <td style="text-align:center;">1 × 1</td>
+      <td style="text-align:center;">1</td>
+      <td style="text-align:center;"><strong>2.00</strong></td>
+      <td style="text-align:center; color: #666;">Capacity Buffer</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature D</strong></td>
+      <td><span class="badge badge-med">Medium</span></td>
+      <td style="text-align:center;">2.0</td>
+      <td style="text-align:center;">1 × 3</td>
+      <td style="text-align:center;">3</td>
+      <td style="text-align:center;"><strong>1.50</strong></td>
+      <td style="text-align:center; color: green; font-weight: bold;">Selected</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature C</strong></td>
+      <td><span class="badge badge-high">High</span></td>
+      <td style="text-align:center;">5.0</td>
+      <td style="text-align:center;">1 × 6</td>
+      <td style="text-align:center;">6</td>
+      <td style="text-align:center;"><strong>1.20</strong></td>
+      <td style="text-align:center; color: red;">Exceeds Cap</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><strong>Feature E</strong></td>
+      <td><span class="badge badge-med">Medium</span></td>
+      <td style="text-align:center;">3.0</td>
+      <td style="text-align:center;">1 × 3</td>
+      <td style="text-align:center;">3</td>
+      <td style="text-align:center;"><strong>1.00</strong></td>
+      <td style="text-align:center; color: red;">Low Efficiency</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3. Cumulative Sprint Selection Step-by-Step</h3>
+<ol>
+  <li><strong>Feature A:</strong> High Priority | Effort: 1.0 &rarr; Cumulative Effort: <strong>1.0 pt</strong> (Value: 6)</li>
+  <li><strong>Feature B:</strong> High Priority | Effort: 3.0 &rarr; Cumulative Effort: <strong>4.0 pts</strong> (Value: 12)</li>
+  <li><strong>Feature F:</strong> Medium Priority | Effort: 1.0 &rarr; Cumulative Effort: <strong>5.0 pts</strong> (Value: 15)</li>
+  <li><strong>Feature D:</strong> Medium Priority | Effort: 2.0 &rarr; Cumulative Effort: <strong>7.0 pts</strong> (Value: 18)</li>
+  <li><strong>Feature J:</strong> Low Priority | Effort: 0.1 &rarr; Cumulative Effort: <strong>7.1 pts</strong> (Value: 19)</li>
+  <li><strong>Feature I:</strong> Low Priority | Effort: 0.3 &rarr; Cumulative Effort: <strong>7.4 pts</strong> (Value: 20)</li>
+  <li><strong>Feature G:</strong> Low Priority | Effort: 0.4 &rarr; Cumulative Effort: <strong>7.8 pts</strong> (Value: 21)</li>
+</ol>
+
+<div class="callout-box">
+  <h4 style="margin-top:0; color:#0b3c5d;">Final Recommendation</h4>
+  <p><strong>Add Features A, B, F, D, J, I, and G to the sprint backlog.</strong></p>
+  <ul>
+    <li><strong>Total Effort Used:</strong> <strong>7.8 story points</strong> out of 10.0 points available.</li>
+    <li><strong>Total Value Delivered:</strong> <strong>21 value points</strong> (maximum value return for minimal effort).</li>
+    <li><strong>Risk Buffer Remaining:</strong> <strong>2.2 story points</strong> preserved as an engineering buffer for QA and deployment stability.</li>
+    <li><em>(Optional)</em> If zero buffer is preferred, <strong>Feature H</strong> (0.5 pts, Value 1) can also be included to yield <strong>8.3 points</strong> and <strong>22 value points</strong>.</li>
+  </ul>
+</div>
+
+</body>
+</html>

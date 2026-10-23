@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quarantine & Treatment Facility Management Portal (74 Beds)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --warning: #f59e0b;
+      --warning-bg: #fef3c7;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f8fafc;
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--slate-900);
+    }
+    .brand-title p {
+      font-size: 0.75rem;
+      color: var(--slate-600);
+    }
+
+    /* Navigation tabs */
+    .nav-tabs {
+      display: flex;
+      background: var(--slate-100);
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
+    }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--slate-600);
+      font-weight: 500;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      color: var(--slate-900);
+    }
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      font-weight: 600;
+    }
+
+    /* Capacity ribbon */
+    .capacity-ribbon {
+      background: #fff;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .capacity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--danger-bg);
+      color: #991b1b;
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid #fca5a5;
+    }
+    .capacity-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .kpi-group {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .kpi-item {
+      font-size: 0.82rem;
+      color: var(--slate-600);
+    }
+    .kpi-item strong {
+      color: var(--slate-900);
+      font-size: 0.95rem;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .screen-panel {
+      display: none;
+    }
+    .screen-panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Screen 1: Dashboard */
+    .dash-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .search-input {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--slate-300);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      width: 260px;
+    }
+    .filter-pills {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .pill {
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--slate-300);
+      background: white;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: var(--slate-600);
+    }
+    .pill.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.85rem;
+      max-height: 65vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .room-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .room-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+      transform: translateY(-2px);
+    }
+    .room-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .room-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .room-num {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--slate-900);
+    }
+    .room-temp {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .room-patient {
+      font-size: 0.75rem;
+      color: var(--slate-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.5rem;
+    }
+    .status-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .tag-logged { background: var(--success-bg); color: #065f46; }
+    .tag-pending { background: var(--warning-bg); color: #92400e; }
+    .tag-discharge { background: #e0e7ff; color: #3730a3; }
+    .tag-fever { background: var(--danger-bg); color: #991b1b; }
+
+    /* Screen 2 & 3 Dual Layout */
+    .split-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.5rem;
+    }
+    .side-list {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 1rem;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+    .side-list-item {
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--slate-200);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .side-list-item:hover, .side-list-item.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .main-detail {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    /* Warning banner */
+    .warning-banner {
+      background: var(--warning-bg);
+      border-left: 4px solid var(--warning);
+      padding: 1rem 1.25rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      color: #92400e;
+    }
+    .warning-banner.hidden { display: none; }
+    .warning-banner h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .warning-banner p { font-size: 0.85rem; }
+
+    /* Form controls */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--slate-700);
+      margin-bottom: 0.4rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--slate-300);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .form-help {
+      font-size: 0.75rem;
+      color: var(--slate-600);
+      margin-top: 0.25rem;
+    }
+
+    .btn {
+      padding: 0.65rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-discharge {
+      background: var(--success);
+      color: white;
+      font-size: 0.9rem;
+      padding: 0.85rem 1.5rem;
+    }
+    .btn-discharge:disabled {
+      background: var(--slate-300);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* 3-Day Fever Chart */
+    .fever-timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .day-card {
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      background: var(--slate-50);
+    }
+    .day-card.fever-free {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .day-card.fever-active {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+    .day-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--slate-600);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .day-temp {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--slate-900);
+    }
+    .day-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.35rem;
+    }
+    .status-ok { color: #16a34a; }
+    .status-bad { color: #dc2626; }
+
+    /* Admin Queue */
+    .discharge-queue-box {
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--slate-200);
+      padding-top: 1.5rem;
+    }
+    .alert-4hr {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🏥</div>
+      <div class="brand-title">
+        <h1>Quarantine & Treatment Facility Portal</h1>
+        <p>74-Bed Clinical Operations & Discharge Management</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('screen-dashboard')">📊 Screen 1: Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('screen-nurse')">🩺 Screen 2: Nurse Station</button>
+      <button class="tab-btn" onclick="switchTab('screen-doctor')">👨‍⚕️ Screen 3: Doctor / Admin</button>
+    </nav>
+  </header>
+
+  <!-- Facility Ribbon -->
+  <div class="capacity-ribbon">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="capacity-badge">
+        <span class="dot"></span>
+        <span>FACILITY AT FULL CAPACITY: 74/74 BEDS OCCUPIED (100%)</span>
+      </div>
+    </div>
+    <div class="kpi-group">
+      <div class="kpi-item">Clinical Success Benchmark: <strong>85.0% Target</strong></div>
+      <div class="kpi-item">Expected Mortality: <strong>15.0% Cap</strong></div>
+      <div class="kpi-item">Ready for Discharge: <strong id="readyCount" style="color: #2563eb;">2 Patients</strong></div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main>
+
+    <!-- SCREEN 1: ROOM OVERVIEW -->
+    <section id="screen-dashboard" class="screen-panel active">
+      <div class="dash-controls">
+        <div style="display:flex; gap:0.75rem; align-items:center;">
+          <input type="text" id="roomSearch" class="search-input" placeholder="Search Room # or Patient Name..." onkeyup="filterRooms()">
+          <div class="filter-pills">
+            <button class="pill active" onclick="setFilter('all', this)">All (74)</button>
+            <button class="pill" onclick="setFilter('pending', this)">Pending Vitals</button>
+            <button class="pill" onclick="setFilter('fever', this)">Active Fever</button>
+            <button class="pill" onclick="setFilter('discharge', this)">Ready for Discharge</button>
+          </div>
+        </div>
+        <p style="font-size:0.82rem; color:var(--slate-600);">Tip: Click any room card to open nurse logging or doctor review.</p>
+      </div>
+
+      <div class="rooms-grid" id="roomsContainer"></div>
+    </section>
+
+    <!-- SCREEN 2: NURSE STATION -->
+    <section id="screen-nurse" class="screen-panel">
+      <div class="split-layout">
+        <div class="side-list">
+          <h3 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--slate-700);">Select Bed (74 Rooms)</h3>
+          <div id="nursePatientList"></div>
+        </div>
+        <div class="main-detail">
+          <h2 id="nurseBedTitle" style="font-size: 1.3rem; margin-bottom: 0.25rem;">Room 101 - Bedside Logger</h2>
+          <p id="nursePatientMeta" style="color: var(--slate-600); font-size: 0.85rem; margin-bottom: 1.5rem;">Patient: John Doe | Day 4 of Quarantine</p>
+
+          <form onsubmit="handleLogTemp(event)">
+            <div class="form-group">
+              <label for="tempInput">Record Body Temperature (°F)</label>
+              <input type="number" id="tempInput" step="0.1" min="95.0" max="108.0" required class="form-input" placeholder="e.g. 98.6" style="font-size: 1.25rem; font-weight: 700; width: 220px;">
+              <p class="form-help">Physiological bounds enforced: 95.0°F to 108.0°F. Automated server timestamp applied upon submission.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="nurseNotes">Clinical Observation / Symptoms</label>
+              <input type="text" id="nurseNotes" class="form-input" placeholder="e.g. Mild headache, hydration normal, respiratory rate 16/min">
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="btnLogVitals">
+              💾 Record & Submit Vitals
+            </button>
+          </form>
+
+          <div style="margin-top: 2rem; border-top: 1px solid var(--slate-200); padding-top: 1rem;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Temperature Log History (Room Audit Trail)</h4>
+            <div id="vitalsLogHistory" style="font-size: 0.82rem; color: var(--slate-600);"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: DOCTOR & ADMIN CONSOLE -->
+    <section id="screen-doctor" class="screen-panel">
+      <div class="split-layout">
+        <div class="side-list">
+          <h3 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--slate-700);">Patient Directory</h3>
+          <div id="doctorPatientList"></div>
+        </div>
+        <div class="main-detail">
+          <!-- Blocking Warning Banner -->
+          <div id="preVisitWarning" class="warning-banner hidden">
+            <span style="font-size: 1.4rem;">⚠️</span>
+            <div>
+              <h4>Doctor Pre-Visit Safety Warning</h4>
+              <p>Warning: Patient temperature has not been recorded today. Please coordinate with the nurse or record vitals first to avoid workflow delays and protect clinical safety.</p>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <h2 id="docPatientName" style="font-size: 1.3rem; margin-bottom: 0.25rem;">Room 101: John Doe</h2>
+              <p id="docPatientMeta" style="color: var(--slate-600); font-size: 0.85rem;">Admitted: 4 Days Ago | Status: Under Observation</p>
+            </div>
+            <div id="docStatusBadge"></div>
+          </div>
+
+          <!-- 3-Day Fever Recovery Tracker -->
+          <div style="margin-top: 1.5rem;">
+            <h4 style="font-size: 0.9rem; color: var(--slate-700);">3-Day Rolling Fever Tracker (Afebrile Discharge Criterion)</h4>
+            <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 0.75rem;">Discharge requirement: 3 consecutive full calendar days with max daily temperature strictly below 100.4°F.</p>
+
+            <div class="fever-timeline" id="feverTimeline"></div>
+          </div>
+
+          <!-- Discharge Workflow -->
+          <div style="margin-top: 1.5rem; background: var(--slate-50); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--slate-200);">
+            <h4 style="font-size: 0.95rem; margin-bottom: 0.4rem;">Discharge Recommendation Action</h4>
+            <p id="dischargeRuleText" style="font-size: 0.82rem; color: var(--slate-600); margin-bottom: 1rem;">Checking eligibility criteria...</p>
+            
+            <button id="btnDischarge" class="btn btn-discharge" disabled onclick="handleMarkDischarge()">
+              ✓ Mark as Ready for Discharge
+            </button>
+          </div>
+
+          <!-- Admin Discharge Queue -->
+          <div class="discharge-queue-box">
+            <h4 style="font-size: 0.95rem; color: var(--slate-900); margin-bottom: 0.5rem;">Admin Real-Time Discharge Queue</h4>
+            <div id="adminDischargeList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Generate 74 Rooms Data
+    const patients = [];
+    const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen"];
+    const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"];
+
+    for (let i = 1; i <= 74; i++) {
+      const roomNum = 100 + i;
+      const fn = firstNames[i % firstNames.length];
+      const ln = lastNames[(i * 3) % lastNames.length];
+      
+      // Seed some variation
+      const loggedToday = i % 5 !== 0; // Every 5th is pending
+      const dayMinus2 = 98.2 + ((i * 7) % 30) / 10;
+      const dayMinus1 = 98.0 + ((i * 11) % 28) / 10;
+      const todayTemp = loggedToday ? (97.9 + ((i * 13) % 27) / 10) : null;
+      
+      const isCured = (dayMinus2 < 100.4 && dayMinus1 < 100.4 && todayTemp !== null && todayTemp < 100.4 && (i % 7 === 0));
+      const hasFever = (todayTemp !== null && todayTemp >= 100.4) || (!loggedToday && dayMinus1 >= 100.4);
+
+      patients.push({
+        id: i,
+        room: roomNum,
+        name: `${fn} ${ln}`,
+        loggedToday: loggedToday,
+        todayTemp: todayTemp ? parseFloat(todayTemp.toFixed(1)) : null,
+        history: [
+          { day: "Day -2", temp: parseFloat(dayMinus2.toFixed(1)) },
+          { day: "Day -1", temp: parseFloat(dayMinus1.toFixed(1)) },
+          { day: "Today", temp: todayTemp ? parseFloat(todayTemp.toFixed(1)) : null }
+        ],
+        readyForDischarge: isCured,
+        dischargedAt: isCured ? new Date(Date.now() - (i % 3 === 0 ? 5 * 3600000 : 1 * 3600000)) : null,
+        notes: "Stable vitals, regular hydration."
+      });
+    }
+
+    let selectedPatientId = 1;
+    let currentFilter = 'all';
+
+    function init() {
+      renderRoomsGrid();
+      renderNurseList();
+      renderDoctorList();
+      loadNurseDetail(1);
+      loadDoctorDetail(1);
+      updateDischargeCount();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('active'));
+      
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function updateDischargeCount() {
+      const ready = patients.filter(p => p.readyForDischarge).length;
+      document.getElementById('readyCount').innerText = `${ready} Patients`;
+    }
+
+    // Screen 1 Render
+    function renderRoomsGrid() {
+      const container = document.getElementById('roomsContainer');
+      const searchTerm = (document.getElementById('roomSearch')?.value || '').toLowerCase();
+      container.innerHTML = '';
+
+      patients.forEach(p => {
+        const matchesSearch = p.room.toString().includes(searchTerm) || p.name.toLowerCase().includes(searchTerm);
+        if (!matchesSearch) return;
+
+        if (currentFilter === 'pending' && p.loggedToday) return;
+        if (currentFilter === 'fever' && (!p.todayTemp || p.todayTemp < 100.4)) return;
+        if (currentFilter === 'discharge' && !p.readyForDischarge) return;
+
+        let badgeClass = 'tag-logged';
+        let badgeText = 'Logged';
+        if (!p.loggedToday) {
+          badgeClass = 'tag-pending';
+          badgeText = 'Pending';
+        } else if (p.readyForDischarge) {
+          badgeClass = 'tag-discharge';
+          badgeText = 'Discharge Ready';
+        } else if (p.todayTemp >= 100.4) {
+          badgeClass = 'tag-fever';
+          badgeText = 'Fever';
+        }
+
+        const card = document.createElement('div');
+        card.className = `room-card ${p.id === selectedPatientId ? 'selected' : ''}`;
+        card.onclick = () => {
+          selectedPatientId = p.id;
+          renderRoomsGrid();
+          loadNurseDetail(p.id);
+          loadDoctorDetail(p.id);
+        };
+
+        card.innerHTML = `
+          <div class="room-header">
+            <span class="room-num">Room ${p.room}</span>
+            <span class="room-temp">${p.todayTemp ? p.todayTemp + '°F' : '--'}</span>
+          </div>
+          <div class="room-patient">${p.name}</div>
+          <span class="status-tag ${badgeClass}">${badgeText}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterRooms() {
+      renderRoomsGrid();
+    }
+
+    function setFilter(type, btn) {
+      currentFilter = type;
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      renderRoomsGrid();
+    }
+
+    // Screen 2 Render
+    function renderNurseList() {
+      const list = document.getElementById('nursePatientList');
+      list.innerHTML = '';
+      patients.forEach(p => {
+        const item = document.createElement('div');
+        item.className = `side-list-item ${p.id === selectedPatientId ? 'active' : ''}`;
+        item.onclick = () => {
+          selectedPatientId = p.id;
+          loadNurseDetail(p.id);
+          renderNurseList();
+          renderDoctorList();
+          renderRoomsGrid();
+        };
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; font-weight:600; font-size:0.85rem;">
+            <span>Room ${p.room}</span>
+            <span style="color:${p.loggedToday ? '#10b981' : '#f59e0b'}; font-size:0.75rem;">
+              ${p.loggedToday ? '✓ Recorded' : '⚠️ Pending'}
+            </span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--slate-600);">${p.name}</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function loadNurseDetail(id) {
+      const p = patients.find(item => item.id === id);
+      if (!p) return;
+      document.getElementById('nurseBedTitle').innerText = `Room ${p.room} - Vitals Entry`;
+      document.getElementById('nursePatientMeta').innerText = `Patient: ${p.name} | Bed Occupancy: Confirmed`;
+      document.getElementById('tempInput').value = p.todayTemp || '';
+
+      const historyBox = document.getElementById('vitalsLogHistory');
+      historyBox.innerHTML = p.history.map(h => `
+        <div style="display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px dashed var(--slate-200);">
+          <span><strong>${h.day}:</strong> ${h.temp ? h.temp + '°F' : 'Pending Entry'}</span>
+          <span style="color:var(--slate-500); font-size:0.75rem;">Server Timestamp Verified</span>
+        </div>
+      `).join('');
+    }
+
+    function handleLogTemp(e) {
+      e.preventDefault();
+      const val = parseFloat(document.getElementById('tempInput').value);
+      if (val < 95.0 || val > 108.0) {
+        alert("Validation Error: Temperature must be between 95.0°F and 108.0°F.");
+        return;
+      }
+      const p = patients.find(item => item.id === selectedPatientId);
+      if (p) {
+        p.todayTemp = val;
+        p.loggedToday = true;
+        p.history[2].temp = val;
+
+        // Auto evaluate discharge criteria
+        const afebrile = p.history[0].temp < 100.4 && p.history[1].temp < 100.4 && val < 100.4;
+        if (!afebrile) {
+          p.readyForDischarge = false;
+        }
+
+        alert(`Success! Temperature ${val}°F recorded for Room ${p.room} with timestamp ${new Date().toLocaleTimeString()}.`);
+        loadNurseDetail(p.id);
+        loadDoctorDetail(p.id);
+        renderRoomsGrid();
+        renderNurseList();
+        renderDoctorList();
+        updateDischargeCount();
+      }
+    }
+
+    // Screen 3 Render
+    function renderDoctorList() {
+      const list = document.getElementById('doctorPatientList');
+      list.innerHTML = '';
+      patients.forEach(p => {
+        const item = document.createElement('div');
+        item.className = `side-list-item ${p.id === selectedPatientId ? 'active' : ''}`;
+        item.onclick = () => {
+          selectedPatientId = p.id;
+          loadDoctorDetail(p.id);
+          renderDoctorList();
+          renderNurseList();
+          renderRoomsGrid();
+        };
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; font-weight:600; font-size:0.85rem;">
+            <span>Room ${p.room}</span>
+            <span style="font-size:0.75rem;">${p.readyForDischarge ? '🟢 Ready' : (p.loggedToday ? '🩺 Logged' : '⚠️ No Vitals')}</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--slate-600);">${p.name}</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function loadDoctorDetail(id) {
+      const p = patients.find(item => item.id === id);
+      if (!p) return;
+
+      document.getElementById('docPatientName').innerText = `Room ${p.room}: ${p.name}`;
+      document.getElementById('docPatientMeta').innerText = `Admission Status: Active Quarantine | Bed #100-${p.id}`;
+
+      // Warning banner if vitals not logged
+      const warningBanner = document.getElementById('preVisitWarning');
+      if (!p.loggedToday) {
+        warningBanner.classList.remove('hidden');
+      } else {
+        warningBanner.classList.add('hidden');
+      }
+
+      // Status badge
+      const badgeBox = document.getElementById('docStatusBadge');
+      if (p.readyForDischarge) {
+        badgeBox.innerHTML = `<span class="status-tag tag-discharge" style="font-size:0.85rem; padding:4px 10px;">Ready for Discharge</span>`;
+      } else if (!p.loggedToday) {
+        badgeBox.innerHTML = `<span class="status-tag tag-pending" style="font-size:0.85rem; padding:4px 10px;">Pending Vitals</span>`;
+      } else if (p.todayTemp >= 100.4) {
+        badgeBox.innerHTML = `<span class="status-tag tag-fever" style="font-size:0.85rem; padding:4px 10px;">Active Fever (${p.todayTemp}°F)</span>`;
+      } else {
+        badgeBox.innerHTML = `<span class="status-tag tag-logged" style="font-size:0.85rem; padding:4px 10px;">Afebrile (${p.todayTemp}°F)</span>`;
+      }
+
+      // 3-Day Fever Timeline
+      const timeline = document.getElementById('feverTimeline');
+      let afebrileCount = 0;
+      timeline.innerHTML = p.history.map(h => {
+        const hasFever = h.temp === null || h.temp >= 100.4;
+        if (h.temp !== null && h.temp < 100.4) afebrileCount++;
+        return `
+          <div class="day-card ${hasFever ? 'fever-active' : 'fever-free'}">
+            <div class="day-title">${h.day}</div>
+            <div class="day-temp">${h.temp ? h.temp + '°F' : 'Pending'}</div>
+            <div class="day-status ${hasFever ? 'status-bad' : 'status-ok'}">
+              ${h.temp === null ? 'Awaiting Log' : (hasFever ? '⚠️ Fever Detected' : '✓ Normal (<100.4°F)')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Discharge eligibility check
+      const btnDischarge = document.getElementById('btnDischarge');
+      const ruleText = document.getElementById('dischargeRuleText');
+      const isEligible = afebrileCount === 3 && p.loggedToday;
+
+      if (p.readyForDischarge) {
+        ruleText.innerHTML = `<strong>Status:</strong> Patient already marked as "Ready for Discharge". Notification dispatched to Admin Queue.`;
+        btnDischarge.disabled = true;
+        btnDischarge.innerText = '✓ Marked for Discharge';
+      } else if (isEligible) {
+        ruleText.innerHTML = `<span style="color:#16a34a; font-weight:600;">✓ Clinical criteria satisfied: 3 consecutive days afebrile. Ready to recommend discharge.</span>`;
+        btnDischarge.disabled = false;
+        btnDischarge.innerText = '✓ Mark as Ready for Discharge';
+      } else {
+        ruleText.innerHTML = `<span style="color:#dc2626; font-weight:600;">❌ Locked: Patient requires 3 consecutive full afebrile days (Current: ${afebrileCount}/3 days).</span>`;
+        btnDischarge.disabled = true;
+        btnDischarge.innerText = '🔒 Discharge Locked (Criteria Not Met)';
+      }
+
+      renderAdminQueue();
+    }
+
+    function handleMarkDischarge() {
+      const p = patients.find(item => item.id === selectedPatientId);
+      if (p) {
+        p.readyForDischarge = true;
+        p.dischargedAt = new Date();
+        alert(`Patient ${p.name} (Room ${p.room}) marked Ready for Discharge! Admin queue alerted.`);
+        loadDoctorDetail(p.id);
+        renderDoctorList();
+        renderRoomsGrid();
+        updateDischargeCount();
+      }
+    }
+
+    function renderAdminQueue() {
+      const list = document.getElementById('adminDischargeList');
+      const discharged = patients.filter(p => p.readyForDischarge);
+      if (discharged.length === 0) {
+        list.innerHTML = `<p style="font-size:0.82rem; color:var(--slate-500);">No patients currently awaiting discharge.</p>`;
+        return;
+      }
+
+      list.innerHTML = discharged.map(p => {
+        const hoursWaiting = p.dischargedAt ? Math.floor((Date.now() - p.dischargedAt) / 3600000) : 0;
+        const bottleneck = hoursWaiting >= 4;
+        return `
+          <div style="padding:0.75rem; border:1px solid var(--slate-200); border-radius:6px; margin-bottom:0.5rem; background:white;">
+            <div style="display:flex; justify-content:space-between; font-weight:600; font-size:0.85rem;">
+              <span>Room ${p.room}: ${p.name}</span>
+              <span style="color:var(--primary);">Doctor Approved</span>
+            </div>
+            ${bottleneck ? `
+              <div class="alert-4hr">
+                🚨 <strong>Discharge Bottleneck Alert:</strong> Marked > 4 hours ago (${hoursWaiting}h elapsed). Expedite bed turnover to relieve 74/74 capacity.
+              </div>
+            ` : `<p style="font-size:0.78rem; color:var(--slate-600); margin-top:0.25rem;">Discharge recommendation active. Cleaners notified.</p>`}
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
